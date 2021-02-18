@@ -135,6 +135,33 @@ const handleSearchButton = () => {
       error={errBool && filter==='Results per page:' ? true : false}
       helperText={errBool && filter ==='Results per page:' ? error : filter=== 'Date'?'Results will filter starting from selected date' : filter ==='Section' ? 'i.e. us news, environment, football, etc.': ''} />
       </Grid>
+      <List component="nav" className={classes.opt} aria-label="Device settings">
+        <ListItem
+          button
+          onClick={handleClickListItem}
+          disabled={props.endpoint==='editions'}
+        >
+          <ListItemText primary="Order By: " secondary={props.options[selectedIndex]} disabled={props.endpoint==='editions'} />
+        </ListItem>
+      </List>
+         <Grid item>
+      <Menu
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        {props.options.map((option, index) => (
+          <MenuItem
+            key={option}
+            selected={index === selectedIndex}
+            onClick={(event) => handleMenuItemClick(event, index)}
+          >
+            {option}
+          </MenuItem>
+        ))}
+      </Menu>
+      </Grid>
       </Grid>
     </>
   );
@@ -145,7 +172,7 @@ const useStyles = makeStyles((theme) => ({
     padding: '2px 4px',
     display: 'flex',
     alignItems: 'center',
-    width: 1010
+    width: '100%'
   },
   input: {
     marginLeft: theme.spacing(1),
@@ -155,9 +182,17 @@ const useStyles = makeStyles((theme) => ({
     padding: 10,
   },
   filt: {
-    width:'10%'
+    width:'8%',
+    marginRight: 0,
+    padding: 0
+  },
+  opt: {
+    width:'10%',
+    marginLeft: 150,
+    marginRight: 0,
   },
   textField: {
-    width: '150%'
+    width: '150%',
+    marginLeft: 0,
   }
 }));

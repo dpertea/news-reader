@@ -48,8 +48,8 @@ export default function MyTable(props) {
               <StyledTableCell component="th" scope="row">
                 {row.webPublicationDate ? row.webPublicationDate.slice(5,10) + '-' + row.webPublicationDate.slice(0,4) : row.id.replace(/\//g, ", ")}
               </StyledTableCell>
-              <StyledTableCell align="right">{row.webTitle}</StyledTableCell>
-              <StyledTableCell align="left">{row.sectionName ? row.sectionName : row.Path}</StyledTableCell>
+              <StyledTableCell align="left">{row.webTitle}</StyledTableCell>
+              <StyledTableCell align="left">{row.sectionName ? row.sectionName : '/'+row.path}</StyledTableCell>
               <StyledTableCell align="left"><Link href={row.webUrl} color='textPrimary' target='_blank' rel='noreferrer'>{row.webUrl}</Link></StyledTableCell>
             </StyledTableRow>
           ))}
@@ -67,7 +67,7 @@ export default function MyTable(props) {
 const StyledTableCell = withStyles((theme) => ({
   head: {
     color: '#ffffff',
-    background: 'rgba(0,100,120,50)',
+    background: 'rgba(70,105,130,50)',
     fontSize: 18,
   },
   body: {

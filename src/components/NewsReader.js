@@ -23,13 +23,11 @@ function NewsReader() {
     
        /*fetching data*/
        const getAxiosData = useCallback((apiURL) => {
-        console.log('fetching...' + apiURL);
         if (query !== '') {
         axios.get(apiURL)
         .then(resp => {
         setTableResults(resp.data.response.results);
         setTotalResults(resp.data.response.total);
-        console.log(resp.data.response.total);
         if (curPage === 1) {
             setCurResult(1);
         }
@@ -51,9 +49,8 @@ function NewsReader() {
                 setCurPage(1);
         } else {
             getAxiosData(apiURL);   
-        }
-        console.log(apiURL);     
-      }, [apiURL, query, filter, getAxiosData]); 
+        }    
+      }, [apiURL, query, getAxiosData]); 
 
     /*handler for endpoint buttons*/
     const handleButtons = (button) => {
@@ -117,18 +114,16 @@ function NewsReader() {
             justify='center'
             alignItems='center'
             direction='column'
-            width = '200vh'
+            fullWidth
             spacing={2}
         >
-        <Grid item xs='auto' md='auto'>
+        <Grid item>
         <Typography variant ='h2' fontWeight='fontWeightBold'>The Guardian News Reader</Typography>
         </Grid>
-        <Grid item xs={12} md={6} sm={3}>
+        <Grid item >
         <Buttons handleButtons={handleButtons}></Buttons>
         </Grid>
-        <Grid item xs='auto' md='auto' sm='auto'>
         <SearchBar query={query} endpoint={endpoint} handleInput={handleInput} handleFilter={handleFilter} searchTable={searchTable} options={options}/>
-        </Grid>
         </Grid>
             <MyTable tableResults={tableResults} curResult={curResult} totalResults={totalResults} columns={columns} changePage={changePage} pageSize={pageSize}></MyTable> 
         </>
