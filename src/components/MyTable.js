@@ -30,16 +30,16 @@ export default function MyTable(props) {
   return (
     <>
     <div align = "right">
-     <Typography>Results {props.curResult} - {props.totalResults < (props.curResult+props.pageSize) ? props.totalResults : props.totalResults === 0 ? 0 : props.curResult+props.pageSize} (out of {props.totalResults}) </Typography>
+     <Typography>Results {props.totalResults === 0 ? 0 : props.curResult} - {props.totalResults < (props.curResult+props.pageSize) ? props.totalResults : props.totalResults === 0 ? 0 : props.curResult+props.pageSize} (out of {props.totalResults}) </Typography>
    </div>
     <TableContainer className={classes.container} align='center' justify='center' component={Paper}>
-      <Table className={classes.table} stickyHeader aria-label="customized table" align='center'>
+      <Table className={classes.table} stickyHeader aria-label="customized table" size='small' align='center'>
         <TableHead color={bluegrey}>
           <TableRow>
             <StyledTableCell>{column1}</StyledTableCell>
-            <StyledTableCell align="right">{column2}</StyledTableCell>
-            <StyledTableCell align="right">{column3}</StyledTableCell>
-            <StyledTableCell align="right">{column4}</StyledTableCell>
+            <StyledTableCell align="left">{column2}</StyledTableCell>
+            <StyledTableCell align="left">{column3}</StyledTableCell>
+            <StyledTableCell align="left">{column4}</StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -49,8 +49,8 @@ export default function MyTable(props) {
                 {row.webPublicationDate ? row.webPublicationDate.slice(5,10) + '-' + row.webPublicationDate.slice(0,4) : row.id.replace(/\//g, ", ")}
               </StyledTableCell>
               <StyledTableCell align="right">{row.webTitle}</StyledTableCell>
-              <StyledTableCell align="right">{row.sectionName ? row.sectionName : row.Path}</StyledTableCell>
-              <StyledTableCell align="right"><Link href={row.webUrl} color='rgb(0,100,120)' target='_blank' rel='noreferrer'>{row.webUrl}</Link></StyledTableCell>
+              <StyledTableCell align="left">{row.sectionName ? row.sectionName : row.Path}</StyledTableCell>
+              <StyledTableCell align="left"><Link href={row.webUrl} color='textPrimary' target='_blank' rel='noreferrer'>{row.webUrl}</Link></StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>
@@ -66,12 +66,12 @@ export default function MyTable(props) {
 /*styling*/
 const StyledTableCell = withStyles((theme) => ({
   head: {
-    color: 'rgb(0,100,120)',
-    background: theme.palette.action.hover,
+    color: '#ffffff',
+    background: 'rgba(0,100,120,50)',
     fontSize: 18,
   },
   body: {
-    fontSize: 14,
+    fontSize: 15,
   },
 }))(TableCell);
 

@@ -7,12 +7,6 @@ import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import { List, ListItem, ListItemText, MenuItem, Menu, TextField, Grid } from '@material-ui/core';
 
-const options = [
-  'None',
-  'Date',
-  'Tags',
-  'Results per page',
-];
 
 export default function SearchBar(props) {
   const classes = useStyles();
@@ -28,10 +22,13 @@ export default function SearchBar(props) {
     setFiltInput(value);
     if (filter === 'Results per page:') {
       let val = Number(value);
-      if (!(val >= 1 && val <= 200) && value != '') {
+      if (!(val >= 1 && val <= 200)) {
         setErrBool(true);
-      } else setErrBool(false);
-    }
+      } else {
+        setErrBool(false);
+        props.handleFilter(filter, value);
+      }
+    } else props.handleFilter(filter, value);
   }
 
   const handleChange = (e) => {
@@ -51,6 +48,7 @@ const handleSearchButton = () => {
     setSelectedIndex(index);
     setAnchorEl(null);
     setErrBool(false);
+    props.handleFilter('None', '');
   }
   
   const handleClose = () => {
@@ -63,7 +61,7 @@ const handleSearchButton = () => {
         } else if (selectedIndex === 1) {
           setFilter('Date')
         } else if (selectedIndex === 2) {
-          setFilter('Tags')
+          setFilter('Section')
         } else setFilter('Results per page:');
         setFiltInput('');
     }, [selectedIndex]);
@@ -71,7 +69,7 @@ const handleSearchButton = () => {
     /*acts like componentDidUpdate for inputvalidation/error*/
     useEffect(() => {
       if (errBool) {
-        setError('Please select a # between 1-200');
+        setError('Please choose a page size by selecting a number between 1-200');
       }
   }, [errBool]);
 
@@ -80,7 +78,7 @@ const handleSearchButton = () => {
     <Paper component="form" className={classes.root} onKeyPress={(e) => { if (e.key === 'Enter') { e.preventDefault(); props.searchTable();}}}>
       <InputBase
         className={classes.input}
-        placeholder={props.searchOption}
+        placeholder={props.endpoint==='search'? 'Search for Content...' : props.endpoint==='tags' ? 'Search for Tags...': 'Search forEditions (US, UK, etc.)...'}
         inputProps={{ 'aria-label': 'search' }}
         fullWidth
         onChange={handleChange}
@@ -100,8 +98,9 @@ const handleSearchButton = () => {
         <ListItem
           button
           onClick={handleClickListItem}
+          disabled={props.endpoint==='editions'}
         >
-          <ListItemText primary="Filter By: " secondary={options[selectedIndex]} />
+          <ListItemText primary="Filter By: " secondary={props.options[selectedIndex]} disabled={props.endpoint==='editions'} />
         </ListItem>
       </List>
          <Grid item>
@@ -111,7 +110,7 @@ const handleSearchButton = () => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {options.map((option, index) => (
+        {props.options.map((option, index) => (
           <MenuItem
             key={option}
             selected={index === selectedIndex}
@@ -134,7 +133,7 @@ const handleSearchButton = () => {
       inputProps={filter==='Date'? {maxLength:23}: {maxLength:100}}
       onChange={handleFiltChange}
       error={errBool && filter==='Results per page:' ? true : false}
-      helperText={errBool && filter ==='Results per page:' ? error : filter=== 'Date'?'Results will filter starting from selected date' : ''} />
+      helperText={errBool && filter ==='Results per page:' ? error : filter=== 'Date'?'Results will filter starting from selected date' : filter ==='Section' ? 'i.e. us news, environment, football, etc.': ''} />
       </Grid>
       </Grid>
     </>

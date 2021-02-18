@@ -3,7 +3,7 @@ import withStyles from '@material-ui/core/styles/withStyles';
 import {ToggleButtonGroup, ToggleButton} from '@material-ui/lab'
 
   export default function Buttons(props) {
-    const [press, setPress]= useState('articles');
+    const [press, setPress]= useState('content');
     const handlePress = (e, newPress) => {
         setPress(newPress);
         props.handleButtons(newPress);
@@ -11,7 +11,7 @@ import {ToggleButtonGroup, ToggleButton} from '@material-ui/lab'
     return (
      <>
     <ToggleButtonGroup exclusive value={press} color='rgb(0,50,120)' thumbstyle='rgb(0,50,120)' trackstyle='rgb(0,50,120)' aria-label='choose your search' onChange={handlePress}>
-    <StickyButton thumbstyle='rgb(0,50,120)' trackstyle='rgb(0,50,120)' value='articles'>Search for Content</StickyButton>
+    <StickyButton thumbstyle='rgb(0,50,120)' trackstyle='rgb(0,50,120)' value='content'>Search for Content</StickyButton>
     <StickyButton value='tags'>Search for Tags</StickyButton>
     <StickyButton value='editions'>Search for Editions</StickyButton>
      </ToggleButtonGroup>
