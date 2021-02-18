@@ -19,13 +19,14 @@ function NewsReader() {
     const [filter, setFilter] = useState('');
     const [options, setOptions] = useState(['None','Date','Section','Results per page']);
     const [order, setOrder] = useState('relevance')
-    //var key = apiKey.guardianAPIKey;
-    const apiURL=`https://content.guardianapis.com/${endpoint}?order-by=${order}${filter}&page-size=${pageSize+1}&page=${curPage}&q=${query}&api-key=test`
+   // var key = apiKey.guardianAPIKey;
+    //if api rate exceeds limit:
+    var key = 'test'
+    const apiURL=`https://content.guardianapis.com/${endpoint}?order-by=${order}${filter}&page-size=${pageSize+1}&page=${curPage}&q=${query}&api-key=${key}`
     
        /*fetching data*/
        const getAxiosData = useCallback((apiURL) => {
         if (query !== '') {
-        console.log(apiURL);
         axios.get(apiURL)
         .then(resp => {
         setTableResults(resp.data.response.results);
