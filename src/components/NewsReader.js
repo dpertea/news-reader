@@ -18,12 +18,14 @@ function NewsReader() {
     const [curResult, setCurResult] = useState(0);
     const [filter, setFilter] = useState('');
     const [options, setOptions] = useState(['None','Date','Section','Results per page']);
-    var key = apiKey.guardianAPIKey;
-    const apiURL=`https://content.guardianapis.com/${endpoint}?${filter}&page-size=${pageSize+1}&page=${curPage}&q=${query}&api-key=${key}`
+    const [order, setOrder] = useState('relevance')
+    //var key = apiKey.guardianAPIKey;
+    const apiURL=`https://content.guardianapis.com/${endpoint}?order-by=${order}${filter}&page-size=${pageSize+1}&page=${curPage}&q=${query}&api-key=test`
     
        /*fetching data*/
        const getAxiosData = useCallback((apiURL) => {
         if (query !== '') {
+        console.log(apiURL);
         axios.get(apiURL)
         .then(resp => {
         setTableResults(resp.data.response.results);
@@ -50,7 +52,7 @@ function NewsReader() {
         } else {
             getAxiosData(apiURL);   
         }    
-      }, [apiURL, query, getAxiosData]); 
+      }, [apiURL, query, order, filter, getAxiosData]); 
 
     /*handler for endpoint buttons*/
     const handleButtons = (button) => {
@@ -95,16 +97,26 @@ function NewsReader() {
             setFilter('');
         }
         else if (filter==='Date') {
-            setFilter(`from-date=${input}`)
+            setFilter(`&from-date=${input}`)
         } else if (filter==='Section') {
             input = input.toLowerCase();
             input = input.replace(/\s/g, "-");
-            setFilter(`section=${input}`)
+            setFilter(`&section=${input}`)
         } else if (filter==='Results per page:') {
             setCurPage(1);
             setCurResult(1);
             setPageSize(input-1);
         } else setFilter('');
+    }
+
+    const handleOrder = (option) => {
+        if (option === 'relevance') {
+            setOrder('relevance');
+        } else if (option === 'newest') {
+            setOrder('newest');
+        } else if (option === 'oldest') {
+            setOrder('oldest');
+        }
     }
 
   return (
@@ -114,7 +126,6 @@ function NewsReader() {
             justify='center'
             alignItems='center'
             direction='column'
-            fullWidth
             spacing={2}
         >
         <Grid item>
@@ -123,7 +134,7 @@ function NewsReader() {
         <Grid item >
         <Buttons handleButtons={handleButtons}></Buttons>
         </Grid>
-        <SearchBar query={query} endpoint={endpoint} handleInput={handleInput} handleFilter={handleFilter} searchTable={searchTable} options={options}/>
+        <SearchBar endpoint={endpoint} handleInput={handleInput} handleFilter={handleFilter} searchTable={searchTable} options={options} handleOrder={handleOrder}/>
         </Grid>
             <MyTable tableResults={tableResults} curResult={curResult} totalResults={totalResults} columns={columns} changePage={changePage} pageSize={pageSize}></MyTable> 
         </>

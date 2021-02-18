@@ -7,16 +7,20 @@ import IconButton from '@material-ui/core/IconButton';
 import SearchIcon from '@material-ui/icons/Search';
 import { List, ListItem, ListItemText, MenuItem, Menu, TextField, Grid } from '@material-ui/core';
 
-
 export default function SearchBar(props) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState(null);
+  const [orderAnchorEl, setOrderAnchorEl] = useState(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [selectedOrderInd, setSelectedOrderInd] = useState(0);
   const [filtInput, setFiltInput] = useState('');
+  const [order, setOrder] = useState('relevance');
   const [filter, setFilter] = useState('None');
   const [error, setError] = useState('');
   const [errBool, setErrBool] = useState(false);
-
+  const ordering = ['Relevance', 'Most Recent', 'Oldest'];
+  let {endpoint, handleInput, handleFilter, searchTable, options, handleOrder} = props;
+ 
   const handleFiltChange = (e) => {
     const {target: {value}} = e;
     setFiltInput(value);
@@ -26,29 +30,53 @@ export default function SearchBar(props) {
         setErrBool(true);
       } else {
         setErrBool(false);
-        props.handleFilter(filter, value);
+        handleFilter(filter, value);
       }
-    } else props.handleFilter(filter, value);
+    } else handleFilter(filter, value);
   }
 
   const handleChange = (e) => {
     let i = e.target.value.toLowerCase();
     let input = encodeURI(i);
-    props.handleInput(input);
+    handleInput(input);
   } 
 const handleSearchButton = () => {
-  props.searchTable();
+  searchTable();
   } 
 
   const handleClickListItem = (e) => {
     setAnchorEl(e.currentTarget);
   }
+
+  const handleClickOrderListItem = (e) => {
+    setOrderAnchorEl(e.currentTarget);
+  }
   
   const handleMenuItemClick = (e, index) => {
+    if (endpoint === 'editions') {
+      setSelectedIndex(0);
+    } else {
     setSelectedIndex(index);
     setAnchorEl(null);
     setErrBool(false);
-    props.handleFilter('None', '');
+    handleFilter('None', '');
+    }
+  }
+
+  const handleOrderClick = (e, index) => {
+    setSelectedOrderInd(index);
+    setOrderAnchorEl(null);
+    if (index === 0) {
+      setOrder('relevance')
+    } else if (index === 1) {
+      setOrder('newest')
+    } else if (index ===2) {
+      setOrder('oldest');
+    }
+  }
+
+  const handleCloseOrder = () => {
+    setOrderAnchorEl(null);
   }
   
   const handleClose = () => {
@@ -58,13 +86,21 @@ const handleSearchButton = () => {
       useEffect(() => {
         if (selectedIndex === 0) {
           setFilter('None')
-        } else if (selectedIndex === 1) {
+        } else if (selectedIndex === 1 && endpoint === 'search') {
           setFilter('Date')
-        } else if (selectedIndex === 2) {
+        } else if (selectedIndex === 1) {
           setFilter('Section')
+        } else if (selectedIndex === 2 && endpoint === 'search') {
+          setFilter('Section')
+        } else if (selectedIndex === 2) {
+          setFilter('Results per page:')
         } else setFilter('Results per page:');
         setFiltInput('');
-    }, [selectedIndex]);
+    }, [selectedIndex, endpoint]);
+
+    useEffect(() => {
+      handleOrder(order);
+    }, [order, handleOrder]);
 
     /*acts like componentDidUpdate for inputvalidation/error*/
     useEffect(() => {
@@ -78,7 +114,7 @@ const handleSearchButton = () => {
     <Paper component="form" className={classes.root} onKeyPress={(e) => { if (e.key === 'Enter') { e.preventDefault(); props.searchTable();}}}>
       <InputBase
         className={classes.input}
-        placeholder={props.endpoint==='search'? 'Search for Content...' : props.endpoint==='tags' ? 'Search for Tags...': 'Search forEditions (US, UK, etc.)...'}
+        placeholder={endpoint==='search'? 'Search for Content...' : endpoint==='tags' ? 'Search for Tags...': 'Search forEditions (US, UK, etc.)...'}
         inputProps={{ 'aria-label': 'search' }}
         fullWidth
         onChange={handleChange}
@@ -98,9 +134,9 @@ const handleSearchButton = () => {
         <ListItem
           button
           onClick={handleClickListItem}
-          disabled={props.endpoint==='editions'}
+          disabled={endpoint==='editions'}
         >
-          <ListItemText primary="Filter By: " secondary={props.options[selectedIndex]} disabled={props.endpoint==='editions'} />
+          <ListItemText primary="Filter By: " secondary={endpoint !== 'editions'? options[selectedIndex] : 'None'} disabled={endpoint==='editions'} />
         </ListItem>
       </List>
          <Grid item>
@@ -110,7 +146,7 @@ const handleSearchButton = () => {
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
-        {props.options.map((option, index) => (
+        {options.map((option, index) => (
           <MenuItem
             key={option}
             selected={index === selectedIndex}
@@ -125,37 +161,37 @@ const handleSearchButton = () => {
       <TextField
       className = {classes.textField}
       autoComplete='off'
-      disabled={filter ==='None'? true: false}
+      disabled={endpoint === 'editions' || filter ==='None'? true: false}
       value={filtInput}
-      label={filter!=='Date'? filter : ''}
+      label={endpoint !== 'editions' && filter!=='Date'? filter : ''}
       type={filter ==='Date' ? 'date' : 'text'}
       placeholder={filter === 'Results per page: ' ? '# between 1-200': ''}
       inputProps={filter==='Date'? {maxLength:23}: {maxLength:100}}
       onChange={handleFiltChange}
       error={errBool && filter==='Results per page:' ? true : false}
-      helperText={errBool && filter ==='Results per page:' ? error : filter=== 'Date'?'Results will filter starting from selected date' : filter ==='Section' ? 'i.e. us news, environment, football, etc.': ''} />
+      helperText={endpoint === 'editions' ? '' : errBool && filter ==='Results per page:' ? error : filter=== 'Date'?'Results will filter starting from selected date' : filter ==='Section' ? 'i.e. us news, environment, football, etc.': ''} />
       </Grid>
       <List component="nav" className={classes.opt} aria-label="Device settings">
         <ListItem
           button
-          onClick={handleClickListItem}
-          disabled={props.endpoint==='editions'}
+          onClick={handleClickOrderListItem}
+          disabled={endpoint==='editions'}
         >
-          <ListItemText primary="Order By: " secondary={props.options[selectedIndex]} disabled={props.endpoint==='editions'} />
+          <ListItemText primary="Order By: " secondary={ordering[selectedOrderInd]} disabled={endpoint!=='search'} />
         </ListItem>
       </List>
          <Grid item>
       <Menu
-        anchorEl={anchorEl}
+        anchorEl={orderAnchorEl}
         keepMounted
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
+        open={Boolean(orderAnchorEl)}
+        onClose={handleCloseOrder}
       >
-        {props.options.map((option, index) => (
+        {ordering.map((option, index) => (
           <MenuItem
             key={option}
-            selected={index === selectedIndex}
-            onClick={(event) => handleMenuItemClick(event, index)}
+            selected={index === selectedOrderInd}
+            onClick={(event) => handleOrderClick(event, index)}
           >
             {option}
           </MenuItem>
