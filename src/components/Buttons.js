@@ -4,32 +4,6 @@ import {ToggleButtonGroup, ToggleButton} from '@material-ui/lab'
 
   export default function Buttons(props) {
     const [press, setPress]= useState('articles');
-    const StickyButton = withStyles({
-        root: {
-          boxShadow: 'none',
-          textTransform: 'none',
-          fontSize: 16,
-          padding: '6px 36px',
-          lineHeight: 1.5,
-          color: 'rgb(0,100,120)',
-          '&:hover': {
-            backgroundColor: 'rgba(0,50,120,.2)',
-            boxShadow: 'none',
-          },
-          '&:active': {
-            boxShadow: 'none',
-            backgroundColor: 'rgba(0,50,120,.5)',
-            borderColor: 'primary',
-          },
-          '&:focus': {
-            backgroundColor: 'rgba(0,50,120,.2)',
-          },
-          '&:blur': {
-            backgroundColor: 'rgba(0,50,120,.2)',
-          },
-        },
-      })(ToggleButton);
-
     const handlePress = (e, newPress) => {
         setPress(newPress);
         props.handleButtons(newPress);
@@ -44,3 +18,30 @@ import {ToggleButtonGroup, ToggleButton} from '@material-ui/lab'
      </>
     );
   }
+
+  /*styling*/
+  const StickyButton = withStyles({
+    root: {
+      boxShadow: 'none',
+      textTransform: 'none',
+      fontSize: 16,
+      padding: '6px 36px',
+      lineHeight: 1.5,
+      color: 'rgb(0,100,120)',
+      '&:hover': {
+        backgroundColor: 'rgba(0,50,120,.2)',
+        boxShadow: 'none',
+      },
+      '&:active': {
+        boxShadow: 'none',
+        backgroundColor: 'rgba(0,50,120,.5)',
+        borderColor: 'primary',
+      },
+      '&:focus': {
+        backgroundColor: 'rgba(0,50,120,.2)',
+      },
+      '&:blur': {
+        backgroundColor: 'rgba(0,50,120,.2)',
+      },
+    },
+  })(ToggleButton);

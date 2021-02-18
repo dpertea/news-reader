@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+/*contains the search bar, as well as the filter option menu and the textfield input for filtering*/ 
+import React, {useState, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import InputBase from '@material-ui/core/InputBase';
@@ -19,10 +20,18 @@ export default function SearchBar(props) {
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [filtInput, setFiltInput] = useState('');
   const [filter, setFilter] = useState('None');
-  const [errors, setError] = useState('');
+  const [error, setError] = useState('');
+  const [errBool, setErrBool] = useState(false);
 
   const handleFiltChange = (e) => {
-
+    const {target: {value}} = e;
+    setFiltInput(value);
+    if (filter === 'Results per page:') {
+      let val = Number(value);
+      if (!(val >= 1 && val <= 200) && value != '') {
+        setErrBool(true);
+      } else setErrBool(false);
+    }
   }
 
   const handleChange = (e) => {
@@ -37,27 +46,34 @@ const handleSearchButton = () => {
   const handleClickListItem = (e) => {
     setAnchorEl(e.currentTarget);
   }
-
+  
   const handleMenuItemClick = (e, index) => {
     setSelectedIndex(index);
     setAnchorEl(null);
-    if (props.endpoint === '/search') {
-      if (index === 0) {
-          setFilter('None')
-      }
-      else if (index === 1) {
-          setFilter('Date')
-      }
-      else if (index == 2) {
-          setFilter('Tags')
-      } else setFilter('Results per Page:')
-    }
+    setErrBool(false);
   }
-  console.log(filter);
-
+  
   const handleClose = () => {
     setAnchorEl(null);
   }
+      /*acts like componentDidUpdate for selected index of menu*/
+      useEffect(() => {
+        if (selectedIndex === 0) {
+          setFilter('None')
+        } else if (selectedIndex === 1) {
+          setFilter('Date')
+        } else if (selectedIndex === 2) {
+          setFilter('Tags')
+        } else setFilter('Results per page:');
+        setFiltInput('');
+    }, [selectedIndex]);
+
+    /*acts like componentDidUpdate for inputvalidation/error*/
+    useEffect(() => {
+      if (errBool) {
+        setError('Please select a # between 1-200');
+      }
+  }, [errBool]);
 
   return (
    <>
@@ -75,7 +91,6 @@ const handleSearchButton = () => {
     </Paper>
     <Grid
            container
-           justify='left'
            alignItems='center'
            direction='row'
            width = '200vh'
@@ -107,17 +122,19 @@ const handleSearchButton = () => {
         ))}
       </Menu>
       </Grid>
-      <Grid item>
+      <Grid item >
       <TextField
-      id='standard-filt'
-      autocomplete='off'
-      disabled={filter==='None'? true: false}
-      value={filter}
-      label={filter}
+      className = {classes.textField}
+      autoComplete='off'
+      disabled={filter ==='None'? true: false}
+      value={filtInput}
+      label={filter!=='Date'? filter : ''}
+      type={filter ==='Date' ? 'date' : 'text'}
+      placeholder={filter === 'Results per page: ' ? '# between 1-200': ''}
       inputProps={filter==='Date'? {maxLength:23}: {maxLength:100}}
       onChange={handleFiltChange}
-      error={Boolean(errors?.filtInput)}
-      helperText={(errors?.filtInput)} />
+      error={errBool && filter==='Results per page:' ? true : false}
+      helperText={errBool && filter ==='Results per page:' ? error : filter=== 'Date'?'Results will filter starting from selected date' : ''} />
       </Grid>
       </Grid>
     </>
@@ -140,5 +157,8 @@ const useStyles = makeStyles((theme) => ({
   },
   filt: {
     width:'10%'
+  },
+  textField: {
+    width: '150%'
   }
 }));

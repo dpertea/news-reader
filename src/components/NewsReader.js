@@ -5,6 +5,7 @@ import SearchBar from './SearchBar';
 import MyTable from './MyTable';
 import Buttons from './Buttons';
 const axios = require('axios');
+/* my "parent" component that renders all the other components */
 
 function NewsReader() {
     const [endpoint, setEndpoint] = useState('search');
@@ -16,8 +17,22 @@ function NewsReader() {
     const [pageSize, setPageSize] = useState(() => { return 9 });
     const [curPage, setCurPage] = useState(1);
     const [curResult, setCurResult] = useState(0);
+    const [filter, setFilter] = useState('');
     var key = apiKey.guardianAPIKey;
     const apiURL=`https://content.guardianapis.com/${endpoint}?page-size=${pageSize+1}&page=${curPage}&q=${query}&api-key=${key}`
+    
+    /*acts like componentDidUpdate*/
+    useEffect(() => {
+        if (query === '') {
+                setTableResults([]);
+                setCurResult(0);
+                setTotalResults(0);
+                setCurPage(1);
+        } else {
+            getAxiosData(apiURL);   
+        }     
+      }, [apiURL]);
+
     /*handler for endpoint buttons*/
     const handleButtons = (button) => {
         if (button === 'articles') {
@@ -41,31 +56,20 @@ function NewsReader() {
     const handleInput = (input) => {
         setQuery(input);
     }
-    console.log('currentQuery is: ' + query)
 
     const changePage = (nav) => {
         if (nav === 'next' && curResult + pageSize < totalResults) {
-            setCurResult(curResult + pageSize + 1);
             setCurPage(curPage + 1)
-            getAxiosData(apiURL);
+            setCurResult(curResult + pageSize + 1);
         } else if (nav === 'prev' && curResult !== 0) {
             setCurResult(curResult - pageSize)
             setCurPage(curPage - 1)
-            getAxiosData(apiURL);
         } 
     }
-
-    /*acts like componentDidUpdate for endpoint and query*/
-    useEffect(() => {
-        if (query === '') {
-            setTableResults([]);
-            setCurResult(0);
-            setTotalResults(0);
-        } else {
-            getAxiosData(apiURL);   
-        }
-    }, [endpoint, query]);
-
+        /*called when enter or search icon is clicked, was used in original implementation..kind of redundant now*/
+        const searchTable = () => {
+            getAxiosData(apiURL);
+          }
     /*fetching data*/
     const getAxiosData = apiURL => {
         axios.get(apiURL)
@@ -73,31 +77,14 @@ function NewsReader() {
         setTableResults(resp.data.response.results);
         setTotalResults(resp.data.response.total);
         console.log(resp.data.response.total);
-        if (resp.data.response.results.total === 0 ) {
+        if (resp.data.response.results.total === 0) {
             setCurResult(0);
-        } else setCurResult(1);
+        } 
+        if (curPage === 1) {
+            setCurResult(1);
+        }
         });
     }
-
-    /*called when enter or search icon is clicked, was used in original implementation..kind of redundant now*/
-    const searchTable = () => {
-        getAxiosData(apiURL);
-      }
-/* 
-      const handleFilter = (index) => {
-          if (endpoint === '/search') {
-            if (index === 0) {
-                setFilter('None')
-            }
-            else if (index === 1) {
-                setFilter('Date')
-            }
-            else if (index == 2) {
-                setFilter('Tags')
-            } else setFilter('Results per Page:')
-          }
-
-      } */
 
   return (
       <>
