@@ -122,22 +122,26 @@ function NewsReader() {
 
   return (
       <>
+
       <Grid 
             container
             justify='center'
             alignItems='center'
             direction='column'
             spacing={2}
+            
         >
-        <Grid item>
-        <Typography variant ='h2' fontWeight='fontWeightBold'>The Guardian News Reader</Typography>
+        <Grid item >
+        <Typography variant='h2' fontWeight='fontWeightBold' style={{marginTop: "15px"}}>The Guardian News Reader</Typography>
+        <p>A simple news reader designed to let you search the body of work produced by The Guardian.</p>
+       
         </Grid>
         <Grid item >
         <Buttons handleButtons={handleButtons}></Buttons>
         </Grid>
         <SearchBar endpoint={endpoint} handleInput={handleInput} handleFilter={handleFilter} searchTable={searchTable} options={options} handleOrder={handleOrder}/>
         </Grid>
-            <MyTable tableResults={tableResults} curResult={curResult} totalResults={totalResults} columns={columns} changePage={changePage} pageSize={pageSize}></MyTable> 
+            {totalResults > 0 && <MyTable tableResults={tableResults} curResult={curResult} totalResults={totalResults} columns={columns} changePage={changePage} pageSize={pageSize}></MyTable>}
         </>
         
   )

@@ -114,7 +114,7 @@ const handleSearchButton = () => {
     <Paper component="form" className={classes.root} onKeyPress={(e) => { if (e.key === 'Enter') { e.preventDefault(); props.searchTable();}}}>
       <InputBase
         className={classes.input}
-        placeholder={endpoint==='search'? 'Search for Content...' : endpoint==='tags' ? 'Search for Tags...': 'Search forEditions (US, UK, etc.)...'}
+        placeholder={endpoint==='search'? 'Search for Content...' : endpoint==='tags' ? 'Search for Tags...': 'Search for Editions (US, UK, etc.)...'}
         inputProps={{ 'aria-label': 'search' }}
         fullWidth
         onChange={handleChange}
@@ -123,12 +123,13 @@ const handleSearchButton = () => {
         <SearchIcon />
       </IconButton>
     </Paper>
+    <br/>
     <Grid
            container
            alignItems='center'
            direction='row'
            width = '200vh'
-           spacing={2}
+           spacing={0}
        >
     <List component="nav" className={classes.filt} aria-label="Device settings">
         <ListItem
@@ -136,7 +137,7 @@ const handleSearchButton = () => {
           onClick={handleClickListItem}
           disabled={endpoint==='editions'}
         >
-          <ListItemText primary="Filter By: " secondary={endpoint !== 'editions'? options[selectedIndex] : 'None'} disabled={endpoint==='editions'} />
+          <ListItemText primary="Filter By: " />
         </ListItem>
       </List>
          <Grid item>
@@ -145,12 +146,14 @@ const handleSearchButton = () => {
         keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
+        sx={{margin: 0, padding: 0}}
       >
         {options.map((option, index) => (
           <MenuItem
             key={option}
             selected={index === selectedIndex}
             onClick={(event) => handleMenuItemClick(event, index)}
+            sx={{margin: 0, padding: 0}}
           >
             {option}
           </MenuItem>
